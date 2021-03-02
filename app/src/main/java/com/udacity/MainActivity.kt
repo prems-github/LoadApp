@@ -7,6 +7,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 
@@ -37,24 +39,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-   /* private fun download() {
-        val request =
-            DownloadManager.Request(Uri.parse(URL))
-                .setTitle(getString(R.string.app_name))
-                .setDescription(getString(R.string.app_description))
-                .setRequiresCharging(false)
-                .setAllowedOverMetered(true)
-                .setAllowedOverRoaming(true)
+    fun onRadioButtonClicked(view: View) {
 
-        val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-        downloadID =
-            downloadManager.enqueue(request)// enqueue puts the download request in the queue.
+        when(view.id){
+            R.id.glide-> Toast.makeText(this,"Glide is clicked",Toast.LENGTH_SHORT).show()
+            R.id.load_app-> Toast.makeText(this,"LoadApp is clicked",Toast.LENGTH_SHORT).show()
+            R.id.retrofit-> Toast.makeText(this,"Retrofit is clicked",Toast.LENGTH_SHORT).show()
+        }
     }
 
-    companion object {
-        private const val URL =
-            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
-        private const val CHANNEL_ID = "channelId"
-    }*/
+    /* private fun download() {
+         val request =
+             DownloadManager.Request(Uri.parse(URL))
+                 .setTitle(getString(R.string.app_name))
+                 .setDescription(getString(R.string.app_description))
+                 .setRequiresCharging(false)
+                 .setAllowedOverMetered(true)
+                 .setAllowedOverRoaming(true)
+
+         val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+         downloadID =
+             downloadManager.enqueue(request)// enqueue puts the download request in the queue.
+     }
+
+     companion object {
+         private const val URL =
+             "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
+         private const val CHANNEL_ID = "channelId"
+     }*/
 
 }
