@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 
+private lateinit var loadingButton: LoadingButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +25,20 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        loadingButton=findViewById(R.id.custom_button)
+
+       /* loadingButton.setOnClickListener{
+            Log.d("Main Activity","Click in main activity")
+
+            val animator: ObjectAnimator =ObjectAnimator.ofFloat(loadingButton,View.SCALE_X,1f,2f)
+            animator.apply {
+                repeatCount=3
+                repeatMode=ObjectAnimator.REVERSE
+                duration=500
+                start()
+            }
+
+        }*/
        // setSupportActionBar(toolbar)
 
         /*registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))

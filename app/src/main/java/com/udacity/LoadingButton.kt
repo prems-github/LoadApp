@@ -1,5 +1,6 @@
 package com.udacity
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -7,18 +8,31 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
     private var widthSize = 0f
     private var heightSize = 0f
+    lateinit var statusText: String
 
-    // private val valueAnimator = ValueAnimator()
+    private val valueAnimator = ValueAnimator()
 
-    /*private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
+    private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { _, oldValue, newValue ->
+        if (newValue == ButtonState.Loading) {
+            Log.d("Loading status", "It's loading")
+            statusText = context.getString(R.string.downloading_text)
+            invalidate()
 
-    }*/
+        } else {
+            Log.d("Loading status", "It's completed")
+            statusText = context.getString(R.string.download_text)
+            invalidate()
+
+        }
+
+    }
 
     private val paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
@@ -34,10 +48,15 @@ class LoadingButton @JvmOverloads constructor(
 
     init {
         isClickable = true
+        statusText = context.getString(R.string.download_text)
     }
 
     override fun performClick(): Boolean {
-        return super.performClick()
+        if(super.performClick()) return true
+        Log.d("Loading Button", "button is clicked")
+        buttonState = if(buttonState==ButtonState.Completed) ButtonState.Loading else ButtonState.Completed
+        invalidate()
+        return true
 
     }
 
@@ -51,10 +70,10 @@ class LoadingButton @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         Log.d("Canvas", "Canvas ondraw testing")
-      //  paint.color = context.getColor(R.color.colorPrimary)
+        //  paint.color = context.getColor(R.color.colorPrimary)
         canvas?.drawRect(0f, 0f, widthSize, heightSize, paint)
-        canvas?.drawText("Download", widthSize / 3, heightSize / 1.5f, paintText)
-        invalidate()
+        canvas?.drawText(statusText, widthSize / 3, heightSize / 1.5f, paintText)
+
     }
 
     /*  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
