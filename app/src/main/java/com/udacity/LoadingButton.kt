@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -16,6 +17,7 @@ class LoadingButton @JvmOverloads constructor(
     private var widthSize = 0f
     private var heightSize = 0f
     lateinit var statusText: String
+    lateinit var rectF:RectF
 
     private val valueAnimator = ValueAnimator()
 
@@ -34,9 +36,14 @@ class LoadingButton @JvmOverloads constructor(
 
     }
 
-    private val paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val paintRect: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = context.getColor(R.color.colorPrimary)
+    }
+
+    private val paintArc: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = context.getColor(R.color.colorAccent)
     }
 
     private val paintText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -49,6 +56,7 @@ class LoadingButton @JvmOverloads constructor(
     init {
         isClickable = true
         statusText = context.getString(R.string.download_text)
+
     }
 
     override fun performClick(): Boolean {
@@ -64,6 +72,7 @@ class LoadingButton @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
         widthSize = w.toFloat()
         heightSize = h.toFloat()
+        rectF= RectF(widthSize*0.7f,heightSize*.3f,widthSize*.8f,heightSize*.8f)
         invalidate()
     }
 
@@ -71,8 +80,18 @@ class LoadingButton @JvmOverloads constructor(
         super.onDraw(canvas)
         Log.d("Canvas", "Canvas ondraw testing")
         //  paint.color = context.getColor(R.color.colorPrimary)
-        canvas?.drawRect(0f, 0f, widthSize, heightSize, paint)
-        canvas?.drawText(statusText, widthSize / 3, heightSize / 1.5f, paintText)
+        if(buttonState==ButtonState.Loading) {
+            paintRect.color=context.getColor(R.color.colorPrimaryDark)
+            canvas?.drawRect(0f, 0f, widthSize, heightSize, paintRect)
+            canvas?.drawText(statusText, widthSize / 3, heightSize / 1.5f, paintText)
+            canvas?.drawArc(rectF, 0f, 360f, true, paintArc)
+        }else
+        {
+            paintRect.color=context.getColor(R.color.colorPrimary)
+            canvas?.drawRect(0f, 0f, widthSize, heightSize, paintRect)
+            canvas?.drawText(statusText, widthSize / 3, heightSize / 1.5f, paintText)
+
+        }
 
     }
 
