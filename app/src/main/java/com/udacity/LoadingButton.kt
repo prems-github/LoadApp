@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import kotlin.properties.Delegates
 
@@ -60,13 +59,11 @@ class LoadingButton @JvmOverloads constructor(
     }
 
     private fun loadingAnimation() {
-        Log.d("Loading animation Test", "*2*")
         valueAnimator = ValueAnimator.ofFloat(0f, widthSize).apply {
             duration = 3000
             repeatCount = ValueAnimator.INFINITE
             repeatMode = ValueAnimator.RESTART
             addUpdateListener {
-                Log.d("Loading animation Test", "*3*")
                 widthAnim = it.animatedValue as Float
                 sweepAngle = it.animatedValue as Float / 2
                 invalidate()
@@ -75,11 +72,19 @@ class LoadingButton @JvmOverloads constructor(
 
     }
 
-    override fun performClick(): Boolean {
-        if (super.performClick()) return true
+   /* override fun performClick(): Boolean {
+       // if (super.performClick()) return true
         buttonState = if (buttonState == ButtonState.Completed) ButtonState.Loading else ButtonState.Completed
         return true
 
+    }*/
+
+    fun startDownload(){
+        buttonState=ButtonState.Loading
+    }
+
+    fun endDownload(){
+        buttonState=ButtonState.Completed
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
