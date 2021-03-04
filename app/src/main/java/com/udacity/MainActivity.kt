@@ -64,6 +64,8 @@ class MainActivity : AppCompatActivity() {
                 status = if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) "Success" else "Fail"
 
                 loadingButton.endDownload()
+                disableViewWhileDownloading()
+                Toast.makeText(this@MainActivity,R.string.download_complete,Toast.LENGTH_SHORT).show()
                 radioGroup.clearCheck()
                 notification(URL, status)
                 //startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
@@ -91,6 +93,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun disableViewWhileDownloading(){
+        loadingButton.isEnabled = !loadingButton.isEnabled
+    }
+
     fun onRadioButtonClicked(view: View) {
         isChoiceSelected = true
         URL = when (view.id) {
@@ -116,6 +122,7 @@ class MainActivity : AppCompatActivity() {
             downloadID =
                     downloadManager.enqueue(request)// enqueue puts the download request in the queue.
             loadingButton.startDownload()
+            disableViewWhileDownloading()
 
             Log.d("Download", "$downloadID")
 
