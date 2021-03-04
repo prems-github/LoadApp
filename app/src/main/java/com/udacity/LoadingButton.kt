@@ -3,16 +3,20 @@ package com.udacity
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.withStyledAttributes
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+
+    private var backGroundColor=0
+    private var textColor=0
+    private var backgroundAnimationColor=0
     private var widthSize = 0f
     private var widthAnim = 0f
     private var heightSize = 0f
@@ -33,14 +37,26 @@ class LoadingButton @JvmOverloads constructor(
         }
     }
 
+    init {
+        isClickable = true
+        statusText = context.getString(R.string.download_text)
+        context.withStyledAttributes(attrs,R.styleable.LoadingButton){
+            backGroundColor=getColor(R.styleable.LoadingButton_backgroundColor,0)
+            textColor=getColor(R.styleable.LoadingButton_textColor,0)
+            backgroundAnimationColor=getColor(R.styleable.LoadingButton_backgroundAnimationColor,0)
+
+        }
+    }
+
+
     private val paintRect: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        color = context.getColor(R.color.colorPrimary)
+        color = backGroundColor
     }
 
     private val paintRectAnim: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        color = context.getColor(R.color.colorPrimaryDark)
+        color = backgroundAnimationColor
     }
 
     private val paintArc: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -50,13 +66,9 @@ class LoadingButton @JvmOverloads constructor(
 
     private val paintText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = 60f
-        color = Color.WHITE
+        color = textColor
     }
 
-    init {
-        isClickable = true
-        statusText = context.getString(R.string.download_text)
-    }
 
     private fun loadingAnimation() {
         valueAnimator = ValueAnimator.ofFloat(0f, widthSize).apply {
