@@ -22,4 +22,8 @@
     <string name="download_notification_channel_id">download</string>
     <string name="download_notification_channel_name">download</string>
     <string name="download_complete">Download Complete</string>
+
+    <string name="filename_label">File Name :</string>
+    <string name="status_label">Status :</string>
+    <string name="ok_text">OK</string>
 </resources>
