@@ -9,9 +9,12 @@ import androidx.core.app.NotificationCompat
 private const val NOTIFICATION_ID = 0
 private const val REQUEST_CODE=0
 
-fun NotificationManager.sendNotification(messageBody: String, applicationContext: Context) {
+fun NotificationManager.sendNotification(url: String,status:String, applicationContext: Context) {
 
     val contentIntent= Intent(applicationContext,DetailActivity::class.java)
+    contentIntent.putExtra("FILE_URL",url)
+    contentIntent.putExtra("STATUS",status)
+
     val contentPendingIntent=PendingIntent.getActivity(
             applicationContext,
             NOTIFICATION_ID,
@@ -23,7 +26,7 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
             applicationContext.getString(R.string.download_notification_channel_id))
             .setSmallIcon(R.drawable.ic_cloud_done)
             .setContentTitle(applicationContext.getString(R.string.download_complete))
-            .setContentText(messageBody)
+            .setContentText("abcd")
             .setContentIntent(contentPendingIntent)
             .setAutoCancel(true)
 

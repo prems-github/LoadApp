@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -49,44 +48,33 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, R.string.select_text, Toast.LENGTH_SHORT).show()
             }
         }
-
         downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
-        createChannel(getString(R.string.download_notification_channel_id),
-                getString(R.string.download_notification_channel_name))
-
-
-    }
+        createChannel(getString(R.string.download_notification_channel_id),getString(R.string.download_notification_channel_name))
+  }
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            var status = ""
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             val cursor = downloadManager.query(DownloadManager.Query().setFilterById(id!!))
             while (cursor.moveToNext()) {
                 val downloadStatus = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
-                Log.d("Download status", "column no is $downloadStatus")
-                Log.d("Download status code", "${DownloadManager.STATUS_SUCCESSFUL})")
-                if (downloadStatus == DownloadManager.STATUS_RUNNING) {
-                    Log.d("Download status", "Download is running")
-                    Log.d("Download status code", "${DownloadManager.STATUS_SUCCESSFUL})")
+                status = if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) "Success" else "Fail"
 
-                } else if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) {
-                    Log.d("Download status", "Download is completed")
-                    loadingButton.endDownload()
-                    radioGroup.clearCheck()
-                    notification()
-
-                    //startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
-                }
+                loadingButton.endDownload()
+                radioGroup.clearCheck()
+                notification(URL, status)
+                //startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
             }
         }
     }
 
-    fun notification() {
+    fun notification(url: String, status: String) {
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.sendNotification(getString(R.string.download_complete), applicationContext)
+        notificationManager.sendNotification(URL, status, applicationContext)
     }
 
     fun createChannel(channelId: String, channelName: String) {
@@ -97,10 +85,6 @@ class MainActivity : AppCompatActivity() {
                     channelName,
                     NotificationManager.IMPORTANCE_HIGH
             )
-            notificationChannel.enableLights(true)
-            notificationChannel.enableVibration(true)
-            notificationChannel.lightColor = Color.RED
-            notificationChannel.description = "Repository download is complete"
 
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(notificationChannel)
@@ -139,11 +123,4 @@ class MainActivity : AppCompatActivity() {
             Log.d("Exception", "$e")
         }
     }
-
-    companion object {
-        /*  private const val URL =
-                  "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"*/
-        private const val CHANNEL_ID = "channelId"
-    }
-
 }
