@@ -1,13 +1,16 @@
 package com.udacity
 
 import android.app.DownloadManager
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -17,24 +20,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 
-private lateinit var loadingButton: LoadingButton
-
-enum class RepoSelection {
-    NONE,
-    GLIDE,
-    RETROFIT,
-    LOADAPP
-}
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var loadingButton: LoadingButton
     private var downloadID: Long = 0
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
 
-    private lateinit var URL:String
+    private lateinit var URL: String
     private lateinit var radioGroup: RadioGroup
     private lateinit var downloadManager: DownloadManager
     private var isChoiceSelected: Boolean = false
@@ -43,19 +39,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         loadingButton = findViewById(R.id.custom_button)
-        radioGroup=findViewById(R.id.radio_group)
+        radioGroup = findViewById(R.id.radio_group)
 
         loadingButton.setOnClickListener {
-            if(isChoiceSelected){
-                isChoiceSelected=false
+            if (isChoiceSelected) {
+                isChoiceSelected = false
                 download()
-            }else{
-                Toast.makeText(this,R.string.select_text,Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, R.string.select_text, Toast.LENGTH_SHORT).show()
             }
-      }
+        }
 
         downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+
+        createChannel(getString(R.string.download_notification_channel_id),
+                getString(R.string.download_notification_channel_name))
+
 
     }
 
@@ -75,15 +75,41 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Download status", "Download is completed")
                     loadingButton.endDownload()
                     radioGroup.clearCheck()
-                    startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
+                    notification()
+
+                    //startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
                 }
             }
         }
     }
 
+    fun notification() {
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.sendNotification(getString(R.string.download_complete), applicationContext)
+    }
+
+    fun createChannel(channelId: String, channelName: String) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(
+                    channelId,
+                    channelName,
+                    NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationChannel.enableLights(true)
+            notificationChannel.enableVibration(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.description = "Repository download is complete"
+
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+    }
+
     fun onRadioButtonClicked(view: View) {
         isChoiceSelected = true
-        URL= when (view.id) {
+        URL = when (view.id) {
             R.id.glide -> "https://github.com/bumptech/glide"
             R.id.load_app -> "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter"
             else -> "https://github.com/square/retrofit"
@@ -115,8 +141,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-      /*  private const val URL =
-                "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"*/
+        /*  private const val URL =
+                  "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"*/
         private const val CHANNEL_ID = "channelId"
     }
 

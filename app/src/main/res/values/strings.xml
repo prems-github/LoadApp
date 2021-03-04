@@ -19,4 +19,7 @@
     <string name="download_text">Download</string>
     <string name="downloading_text">Loading...</string>
     <string name="select_text">Select anyone to download</string>
+    <string name="download_notification_channel_id">download</string>
+    <string name="download_notification_channel_name">download</string>
+    <string name="download_complete">Download Complete</string>
 </resources>
