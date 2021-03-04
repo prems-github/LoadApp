@@ -60,7 +60,7 @@ class LoadingButton @JvmOverloads constructor(
 
     private fun loadingAnimation() {
         valueAnimator = ValueAnimator.ofFloat(0f, widthSize).apply {
-            duration = 3000
+            duration = 2000
             repeatCount = ValueAnimator.INFINITE
             repeatMode = ValueAnimator.RESTART
             addUpdateListener {
@@ -71,13 +71,6 @@ class LoadingButton @JvmOverloads constructor(
         }
 
     }
-
-   /* override fun performClick(): Boolean {
-       // if (super.performClick()) return true
-        buttonState = if (buttonState == ButtonState.Completed) ButtonState.Loading else ButtonState.Completed
-        return true
-
-    }*/
 
     fun startDownload(){
         buttonState=ButtonState.Loading
