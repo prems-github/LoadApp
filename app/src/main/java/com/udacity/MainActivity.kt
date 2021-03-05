@@ -3,7 +3,6 @@ package com.udacity
 import android.app.DownloadManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -17,17 +16,12 @@ import android.view.View
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var loadingButton: LoadingButton
     private var downloadID: Long = 0
-
-    private lateinit var notificationManager: NotificationManager
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var action: NotificationCompat.Action
 
     private lateinit var URL: String
     private lateinit var radioGroup: RadioGroup
@@ -48,11 +42,18 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, R.string.select_text, Toast.LENGTH_SHORT).show()
             }
         }
+
+
         downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
-        createChannel(getString(R.string.download_notification_channel_id),getString(R.string.download_notification_channel_name))
-  }
+        createChannel(
+            getString(R.string.download_notification_channel_id),
+            getString(R.string.download_notification_channel_name)
+        )
+    }
+
+    /*checks download status and sends notification accordingly*/
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -60,12 +61,15 @@ class MainActivity : AppCompatActivity() {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             val cursor = downloadManager.query(DownloadManager.Query().setFilterById(id!!))
             while (cursor.moveToNext()) {
-                val downloadStatus = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
-                status = if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) "Success" else "Fail"
+                val downloadStatus =
+                    cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                status =
+                    if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) "Success" else "Fail"
 
                 loadingButton.endDownload()
                 disableViewWhileDownloading()
-                Toast.makeText(this@MainActivity,R.string.download_complete,Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, R.string.download_complete, Toast.LENGTH_SHORT)
+                    .show()
                 radioGroup.clearCheck()
                 notification(URL, status)
                 //startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
@@ -73,30 +77,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+   //triggers notification with custom values
     fun notification(url: String, status: String) {
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.sendNotification(URL, status, applicationContext)
     }
 
+ /*   creating channel */
     fun createChannel(channelId: String, channelName: String) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
-                    channelId,
-                    channelName,
-                    NotificationManager.IMPORTANCE_HIGH
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_DEFAULT
             )
 
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(notificationChannel)
         }
     }
 
-    fun disableViewWhileDownloading(){
+    /*disable view while downloading and toggle back to enable */
+    fun disableViewWhileDownloading() {
         loadingButton.isEnabled = !loadingButton.isEnabled
     }
 
+    //gets user selection
     fun onRadioButtonClicked(view: View) {
         isChoiceSelected = true
         URL = when (view.id) {
@@ -108,19 +118,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun download() {
         val request =
-                DownloadManager.Request(Uri.parse(URL))
-                        .setTitle(getString(R.string.app_name))
-                        .setDescription(getString(R.string.app_description))
-                        .setRequiresCharging(false)
-                        .setAllowedOverMetered(true)
-                        .setAllowedOverRoaming(true)
-                        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/repos/reopsitory.zip")
-                        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+            DownloadManager.Request(Uri.parse(URL))
+                .setTitle(getString(R.string.app_name))
+                .setDescription(getString(R.string.app_description))
+                .setRequiresCharging(false)
+                .setAllowedOverMetered(true)
+                .setAllowedOverRoaming(true)
+                .setDestinationInExternalPublicDir(
+                    Environment.DIRECTORY_DOWNLOADS,
+                    "/repos/reopsitory.zip"
+                )
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
 
         //val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         try {
             downloadID =
-                    downloadManager.enqueue(request)// enqueue puts the download request in the queue.
+                downloadManager.enqueue(request)// enqueue puts the download request in the queue.
             loadingButton.startDownload()
             disableViewWhileDownloading()
 
