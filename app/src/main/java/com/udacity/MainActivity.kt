@@ -143,4 +143,9 @@ class MainActivity : AppCompatActivity() {
             Log.d("Exception", "$e")
         }
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+    }
 }

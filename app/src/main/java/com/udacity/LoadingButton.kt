@@ -81,7 +81,7 @@ class LoadingButton @JvmOverloads constructor(
 //initialization of value animator for animating rectangle width and circle
     private fun loadingAnimation() {
         valueAnimator = ValueAnimator.ofFloat(0f, widthSize).apply {
-            duration = 2000
+            duration = 1500
             repeatCount = ValueAnimator.INFINITE
             repeatMode = ValueAnimator.RESTART
             addUpdateListener {
